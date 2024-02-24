@@ -1,0 +1,1 @@
+# ns_update_vendor
