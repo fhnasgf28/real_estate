@@ -8,7 +8,7 @@ class Estate(models.Model):
 
     name = fields.Char(string='Title', required=True)
     description = fields.Text(string='Description')
-    postcode = fields.Char(string='Postcode', required=True, copy=False)
+    postcode = fields.Char(string='Postcode', required=True, default='12345', copy=False)
     date_availability = fields.Date(string='Date Availability', readonly=True, default=lambda self: fields.Date.today() + timedelta(days=90))
     expected_price = fields.Float(string='Expected price', required=True)
     selling_price = fields.Float(string='Selling price', readonly=True)
@@ -32,3 +32,7 @@ class Estate(models.Model):
         ('sold', 'Sold'),
         ('canceled', 'Canceled'),
     ], string='State', default='new', required=True, copy=False)
+    property_type_id = fields.Many2one('estate.property.type', string='Property Type')
+    buyer_id = fields.Many2one('res.partner', string='Buyer', copy=False)
+    salesperson_id = fields.Many2one('res.users', string='Sales Person', default=lambda self: self.env.user)
+    tag_ids = fields.Many2many('estate.property.tag', string='Tags')
