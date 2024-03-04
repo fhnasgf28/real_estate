@@ -14,8 +14,5 @@
 <!--        estate.property.tag-->
         <menuitem id="menu_estate_property_tag" name="Property Tag" parent="menu_estate_property_type_master" action="action_estate_property_tag" sequence="10"/>
 
-        <!--        estate.property.offer-->
-        <menuitem id="menu_estate_property_offer" name="Property Offer" parent="menu_estate_property_type_master" action="action_estate_property_offer" sequence="10"/>
-
     </data>
 </odoo>

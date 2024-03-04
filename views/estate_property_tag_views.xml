@@ -9,7 +9,9 @@
             <field name="arch" type="xml">
                 <form>
                     <sheet>
-                        <field name="name" string="Name"/>
+                        <group>
+                            <field name="name" string="Name"/>
+                        </group>
                     </sheet>
                 </form>
             </field>

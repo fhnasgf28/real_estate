@@ -1,23 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-
 <!--        form-->
         <record id="view_estate_property_form" model="ir.ui.view">
             <field name="name">estate.property.form</field>
             <field name="model">estate.property</field>
             <field name="arch" type="xml">
                 <form>
+                    <header>
+                        <button name="action_cancel" string="Cancel" button_states="draft,sold" type="object"/>
+                        <button name="action_sold" string="Sold" button_states="draft" class="btn-primary" type="object"/>
+                    </header>
                     <sheet>
                         <group>
-                                <field name="name" string="Name"/>
                             <group>
+                                <field name="name" string="Name"/>
+                                <field name="button_state"/>
                                 <field name="tag_ids" string="Property Tag" widget="many2many_tags"/>
                                 <field name="property_type_id" string="Property Type"/>
+                            </group>
+
+                            <group>
                                 <field name="postcode"/>
                                 <field name="expected_price"/>
-                            </group>
-                            <group>
+                                <field name="best_price"/>
                                 <field name="date_availability"/>
                                 <field name="selling_price"/>
                             </group>
@@ -32,21 +38,16 @@
                                     <field name="garden"/>
                                     <field name="garden_area"/>
                                     <field name="garden_orientation"/>
-                                    <field name="active"/>
-                                    <field name="state"/>
+<!--                                    <field name="state"/>-->
+                                    <field name="total_area"/>
                                 </group>
                                 </page>
-
+                                <page string="Offers">
+                                    <field name="offer_ids"/>
+                                </page>
                                 <page string="Other Information">
                                     <group>
                                         <field name="buyer_id"/>
-                                        <field name="salesperson_id"/>
-                                    </group>
-                                </page>
-
-                                <page string="Offers">
-                                    <group>
-                                        <field name="price"/>
                                         <field name="salesperson_id"/>
                                     </group>
                                 </page>
@@ -70,6 +71,7 @@
                     <field name="selling_price"/>
                     <field name="date_availability" string="Available From"/>
                     <field name="property_type_id" string="Property Type Id"/>
+                    <field name="tag_ids"/>
                 </tree>
             </field>
         </record>
@@ -79,14 +81,13 @@
             <field name="model">estate.property</field>
             <field name="arch" type="xml">
                 <search string="Estate Property">
+                    <filter string="Inactive" name="inactive" domain="[('active', '=', False)]"/>
+                    <filter string="Bedroom" name="Bedroom" domain="[('bedroom', '>', 2)]"/>
                     <field name="name" string="Title"/>
                     <field name="postcode"/>
-                    <field name="expected_price"/>
                     <field name="bedroom"/>
                     <field name="living_area"/>
                     <field name="facades"/>
-                    <filter string="Inactive" name="inactive" domain="[('active', '=', False)]"/>
-                    <filter string="Bedroom" name="Bedroom" domain="[('bedroom', '>', 2)]"/>
                     <group expand="1" string="Group By">
                         <filter string="Property Name" name="name" context="{'group_by':'name'}"/>
                     </group>
