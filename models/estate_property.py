@@ -1,6 +1,7 @@
 from odoo import models, fields, api
 from datetime import date, timedelta
 from odoo.exceptions import UserError
+from odoo.tools.float_utils import float_compare
 
 
 class Estate(models.Model):
@@ -13,19 +14,20 @@ class Estate(models.Model):
     date_availability = fields.Date(string='Date Availability', readonly=True,
                                     default=lambda self: fields.Date.today() + timedelta(days=90))
     expected_price = fields.Float(string='Expected price', required=True)
-    selling_price = fields.Float(string='Selling price', readonly=True)
+    selling_price = fields.Float(string='Selling price')
     bedroom = fields.Integer(string='Bedrooms', default=2)
-    living_area = fields.Integer(string='Living Area')
+    living_area = fields.Integer(string='Living Area')  # compute & garden area
     facades = fields.Integer(string='Facades')
     garage = fields.Boolean(string='Garage')
     garden = fields.Boolean(string='Garden')
-    garden_area = fields.Integer(string='Garden Area', compute='_onchange_garden', inverse='_inverse_onchange_garden')
+    garden_area = fields.Integer(string='Garden Area')  # , inverse='_inverse_onchange_garden'
     garden_orientation = fields.Selection(string='Garden Orientation', selection=[
         ('N', 'North'),
         ('S', 'South'),
         ('E', 'East'),
         ('W', 'West'),
-    ], help='Orientation of the garden on the property', compute='_onchange_garden', inverse='_inverse_onchange_garden')
+    ],
+                                          help='Orientation of the garden on the property')  # , inverse='_inverse_onchange_garden' , compute='_onchange_garden'
     active = fields.Boolean(string='Active', default=True)
     state = fields.Selection([
         ('new', 'New'),
@@ -49,17 +51,19 @@ class Estate(models.Model):
         ('sold', 'Sold')
     ], default='draft', string='Status', readonly=True)
 
+    # chapter 9
     @api.depends('living_area', 'garden_area')
     def _compute_total_area(self):
         for property in self:
             property.total_area = property.living_area + property.garden_area
+            print(property.total_area)
 
     @api.depends('offer_ids')
     def _compute_best_price(self):
         for property in self:
             property.best_price = max(property.offer_ids.mapped('price'), default=0.0)
 
-    @api.depends('garden')
+    @api.onchange('garden')
     def _onchange_garden(self):
         for record in self:
             if record.garden:
@@ -83,10 +87,30 @@ class Estate(models.Model):
         for record in self:
             if record.button_state == 'sold':
                 raise UserError('A sold property cannot be canceled')
-            property.button_state = 'canceled'
+            record.button_state = 'canceled'
 
     def action_sold(self):
         for record in self:
             if record.button_state == 'canceled':
                 raise UserError('A canceled property cannot be set as sold')
             record.button_state = 'sold'
+
+    def action_draft(self):
+        for rec in self:
+            if rec.button_state == "sold":
+                raise UserError("A sold property cannot be set to Draft")
+            rec.button_state = 'draft'
+
+    # Chapter 11
+    _sql_constraints = [
+        ('check_expected_price_positive', 'CHECK(expected_price > 0)', 'Expected price must be strictly positive'),
+        ('check_selling_price_positive', 'CHECK(selling_price >= 0)', 'Selling price must be be positive')
+    ]
+
+    @api.constrains('selling_price', 'expected_price')
+    def _check_selling_price(self):
+        for record in self:
+            if record.selling_price and record.expected_price:
+                min_selling_price = record.expected_price * 0.9
+                if float_compare(record.selling_price, min_selling_price, pricision_digits=2) == -1:
+                    raise ValueError("Selling Price cannot be lower than 90% of the expected price.")

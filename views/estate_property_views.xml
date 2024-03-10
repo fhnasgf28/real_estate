@@ -10,6 +10,7 @@
                     <header>
                         <button name="action_cancel" string="Cancel" button_states="draft,sold" type="object"/>
                         <button name="action_sold" string="Sold" button_states="draft" class="btn-primary" type="object"/>
+                        <button name="action_draft" string="Set to Draft" class="btn-primary" button_draft="draft" type="object"/>
                     </header>
                     <sheet>
                         <group>

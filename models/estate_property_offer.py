@@ -26,3 +26,16 @@ class EstatePropertyOffer(models.Model):
                 offer.validity = (offer.date_deadline - offer_create_date).days
             else:
                 offer.validity = 7
+
+    # chapter 11
+    _sql_constraints = [
+        ('check_price_positive', 'CHECK(price > 0)', 'Offer Price must be strictly positive.')
+    ]
+
+    def action_accept_offer(self):
+        for offer in self:
+            offer.button_state = 'accepted'
+
+    def action_refuse_offer(self):
+        for offer in self:
+            offer.button_state = 'refused'

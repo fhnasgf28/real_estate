@@ -11,6 +11,10 @@ class Estate(models.Model):
     description = fields.Text(string='Description')
     property_ids = fields.One2many('estate.property', 'property_type_id', string='Properties')
 
+    _sql_constraints = [
+        ('unique_property_type_name', 'UNIQUE(name)', 'Property type names must be unique.')
+    ]
+
     # tag_ids = fields.Many2many('estate.property.tag', string='Tags')
     # price = fields.Float(string='Price')
     # status = fields.Selection([('accepted', 'Accepted'), ('refused', 'Refused')], string='Status', default='accepted',
