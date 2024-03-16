@@ -1,12 +1,13 @@
-from odoo import models, fields, api
+from odoo import models, fields, api,_
 from datetime import date, timedelta
-from odoo.exceptions import UserError
-from odoo.tools.float_utils import float_compare
+from odoo.exceptions import UserError, ValidationError
+from odoo.tools.float_utils import float_compare, float_is_zero
 
 
 class Estate(models.Model):
     _name = 'estate.property'
     _description = 'Real estate property'
+    _order = 'name asc'
 
     name = fields.Char(string='Title', required=True)
     description = fields.Text(string='Description')
@@ -26,19 +27,18 @@ class Estate(models.Model):
         ('S', 'South'),
         ('E', 'East'),
         ('W', 'West'),
-    ],
-                                          help='Orientation of the garden on the property')  # , inverse='_inverse_onchange_garden' , compute='_onchange_garden'
+    ], help='Orientation of the garden on the property')  # , inverse='_inverse_onchange_garden' , compute='_onchange_garden'
     active = fields.Boolean(string='Active', default=True)
     state = fields.Selection([
         ('new', 'New'),
-        ('offer received', 'Offer Received'),
-        ('offer accepted', 'Offer Accepted'),
+        ('offer_received', 'Offer Received'),
+        ('offer_accepted', 'Offer Accepted'),
         ('sold', 'Sold'),
         ('canceled', 'Canceled'),
     ], string='State', default='new', required=True, copy=False)
     property_type_id = fields.Many2one('estate.property.type', string='Property Type')
-    buyer_id = fields.Many2one('res.partner', string='Buyer', copy=False)
-    salesperson_id = fields.Many2one('res.users', string='Sales Person', default=lambda self: self.env.user)
+    buyer_id = fields.Many2one('res.partner', string='Buyer', copy=False, readonly=True)
+    salesperson_id = fields.Many2one('res.users', string='Sales Person', default=lambda self: self.env.user.id)
     tag_ids = fields.Many2many('estate.property.tag', string='Tags')
     offer_ids = fields.One2many('estate.property.offer', 'property_id')  # inverse
     # size = fields.Char(related='property_type_id.size')
@@ -94,6 +94,7 @@ class Estate(models.Model):
             if record.button_state == 'canceled':
                 raise UserError('A canceled property cannot be set as sold')
             record.button_state = 'sold'
+            record.write({'state': 'sold'})
 
     def action_draft(self):
         for rec in self:
@@ -103,14 +104,16 @@ class Estate(models.Model):
 
     # Chapter 11
     _sql_constraints = [
-        ('check_expected_price_positive', 'CHECK(expected_price > 0)', 'Expected price must be strictly positive'),
+        ('check_expected_price_positive', 'CHECK(expected_price >= 0)', 'Expected price must be strictly positive'),
         ('check_selling_price_positive', 'CHECK(selling_price >= 0)', 'Selling price must be be positive')
     ]
 
-    @api.constrains('selling_price', 'expected_price')
+    @api.constrains('selling_price')
     def _check_selling_price(self):
-        for record in self:
-            if record.selling_price and record.expected_price:
-                min_selling_price = record.expected_price * 0.9
-                if float_compare(record.selling_price, min_selling_price, pricision_digits=2) == -1:
-                    raise ValueError("Selling Price cannot be lower than 90% of the expected price.")
+        for line in self:
+            min_price = 0.9 * line.expected_price
+            if not float_is_zero(line.expected_price, precision_digits=2) and float_compare(min_price,
+                                                                                            line.selling_price,
+                                                                                            precision_digits=2) == 1:
+                raise ValidationError(_("Selling price should be 90% of expeceted price"))
+            # masih kurang paham

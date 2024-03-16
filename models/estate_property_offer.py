@@ -1,16 +1,20 @@
 from odoo import models, fields, api
 from datetime import timedelta
+from odoo.exceptions import ValidationError
 class EstatePropertyOffer(models.Model):
     _name = 'estate.property.offer'
     _description = 'Real estate property offer'
+    _order = 'price desc'
 
     price = fields.Float(string='Price')
-    status = fields.Selection([('accepted', 'Accepted'), ('refused', 'Refused')], string='Status', default='accepted', copy=False, accepted='accepted', refused='refused')
+    status = fields.Selection([('accepted', 'Accepted'), ('refused', 'Refused')], string='Status', default='accepted',)
     date_deadline = fields.Date(string='Deadline', compute='_compute_date_deadline', inverse='_inverse_date_deadline')
     partner_id = fields.Many2one('res.partner', string='Partner', required=True)
     property_id = fields.Many2one('estate.property', string='Property', required=True)
+    property_type_id = fields.Many2one('estate.property.type', string='Property Type', related='property_id.property_type_id')
     validity = fields.Integer('Validity (days)', default=7)
     create_date = fields.Datetime(string='Create Date')
+    is_offer_accepted = fields.Boolean(compute="_is_offer_accepted")
 
     @api.depends('create_date', 'validity')
     def _compute_date_deadline(self):
@@ -28,14 +32,47 @@ class EstatePropertyOffer(models.Model):
                 offer.validity = 7
 
     # chapter 11
-    _sql_constraints = [
-        ('check_price_positive', 'CHECK(price > 0)', 'Offer Price must be strictly positive.')
-    ]
+    # _sql_constraints = [
+    #     ('check_price_positive', 'CHECK(price > 0)', 'Offer Price must be strictly positive.')
+    # ]
 
     def action_accept_offer(self):
         for offer in self:
-            offer.button_state = 'accepted'
+            offer.write({'status': 'accepted'})
+            offer.property_id.selling_price = offer.property_id.best_price
+            offer.property_id.buyer_id = offer.partner_id
+            offer.property_id.write({'state': 'offer_accepted'})
+    @api.depends('property_id.state')
+    def _is_offer_accepted(self):
+        for record in self:
+            record.is_offer_accepted = record.property_id.state == 'offer_accepted'
 
-    def action_refuse_offer(self):
+    def action_refused(self):
         for offer in self:
-            offer.button_state = 'refused'
+            offer.status = 'refused'
+
+    # chapter 11
+    @api.constrains('price')
+    def _price_not_nol(self):
+        for record in self:
+            if record.price <= 0:
+                raise ValidationError("Offer Price must be strictly positive.")
+
+
+    # def action_accepted(self):
+    #     for offer in self:
+    #         offer.write({'status': 'accepted'})
+    #         offer.property_id.selling_price = offer.property_id.best_price
+    #         offer.property_id.buyer_id = offer.partner_id
+    #         offer.property_id.write({'state': 'offer_accepted'})
+    #
+    # def action_refused(self):
+    #     for offer in self:
+    #         offer.write({'status': 'refused'})
+
+    # for offer in self:
+    #     best_price = self.env['estate.property.offer'].search(
+    #         [('property_id', '=', offer.property_id.id), ('status', '=', 'accepted')], order='price desc', limit=1)
+    #     if best_price:
+    #         offer.property_id.write({'selling_price': best_price.price, 'buyer_id': best_price.partner_id.id})
+    #     offer.write({'status': 'accepted'})

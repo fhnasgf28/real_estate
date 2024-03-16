@@ -8,19 +8,21 @@
             <field name="arch" type="xml">
                 <form>
                     <header>
-                        <button name="action_cancel" string="Cancel" button_states="draft,sold" type="object"/>
-                        <button name="action_sold" string="Sold" button_states="draft" class="btn-primary" type="object"/>
-                        <button name="action_draft" string="Set to Draft" class="btn-primary" button_draft="draft" type="object"/>
+                        <button name="action_cancel" string="Cancel" button_states="canceled" type="object" invisible="state == 'sold'"/>
+<!--                        button_states="draft,sold"-->
+                        <button name="action_sold" string="Sold" button_states="draft" class="btn-primary" type="object" invisible="state == 'sold'"/>
+                        <button name="action_draft" string="Set to Draft" class="btn-primary" type="object"/>
+<!--                         button_draft="draft" -->
+                        <field name="state" widget="statusbar" statusbar_visible="new, offer_received, offer_accepted, sold" statusbar_colors='{"offer_received": "blue","offer_accepted":"bold green", "sold": "muted"}'/>
                     </header>
                     <sheet>
                         <group>
                             <group>
                                 <field name="name" string="Name"/>
                                 <field name="button_state"/>
-                                <field name="tag_ids" string="Property Tag" widget="many2many_tags"/>
-                                <field name="property_type_id" string="Property Type"/>
+                                <field name="tag_ids" string="Property Tag" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                                <field name="property_type_id" string="Property Type" options="{'no_create': true, 'no_open': true}"/>
                             </group>
-
                             <group>
                                 <field name="postcode"/>
                                 <field name="expected_price"/>
@@ -37,14 +39,15 @@
                                     <field name="facades"/>
                                     <field name="garage"/>
                                     <field name="garden"/>
-                                    <field name="garden_area"/>
-                                    <field name="garden_orientation"/>
+                                    <field name="garden_area" invisible="garden == False"/>
+                                    <field name="garden_orientation" invisible="garden == False"/>
 <!--                                    <field name="state"/>-->
                                     <field name="total_area"/>
                                 </group>
                                 </page>
                                 <page string="Offers">
                                     <field name="offer_ids"/>
+<!--                                    options="{'no_create_edit': [('state', 'in', ['offer_accepted', 'sold', 'canceled'])"-->
                                 </page>
                                 <page string="Other Information">
                                     <group>
@@ -63,16 +66,24 @@
             <field name="name">estate.property.tree</field>
             <field name="model">estate.property</field>
             <field name="arch" type="xml">
-                <tree>
+                <tree decoration-danger="state == 'cancel'"
+                      decoration-muted="state == 'sold'"
+                      decoration-success="state == 'offer_accepted'"
+                      decoration-info="state == 'offer_received'">
                     <field name="name"/>
                     <field name="postcode" string="post code"/>
                     <field name="bedroom"/>
                     <field name="living_area"/>
                     <field name="expected_price"/>
                     <field name="selling_price"/>
-                    <field name="date_availability" string="Available From"/>
+                    <field name="date_availability" string="Available From"  options='{"no_open": True}' invisible="1"/>
                     <field name="property_type_id" string="Property Type Id"/>
                     <field name="tag_ids"/>
+                    <field name="state" decoration-danger="state == 'cancel'"
+                      decoration-muted="state == 'sold'"
+                      decoration-success="state == 'offer_accepted'"
+                      decoration-info="state == 'offer_received'"
+                      widget="badge"/>
                 </tree>
             </field>
         </record>
@@ -82,13 +93,13 @@
             <field name="model">estate.property</field>
             <field name="arch" type="xml">
                 <search string="Estate Property">
-                    <filter string="Inactive" name="inactive" domain="[('active', '=', False)]"/>
-                    <filter string="Bedroom" name="Bedroom" domain="[('bedroom', '>', 2)]"/>
                     <field name="name" string="Title"/>
                     <field name="postcode"/>
                     <field name="bedroom"/>
-                    <field name="living_area"/>
-                    <field name="facades"/>
+                    <field name="living_area" filter_domain="[('living_area', '>=', 10)]"/>
+                    <filter name="Available" domain="[('name', 'ilike', 'farhan')]"/>
+                    <filter string="Inactive" name="inactive" domain="[('active', '=', False)]"/>
+                    <filter string="Bedroom" name="Bedroom" domain="[('bedroom', '>', 2)]"/>
                     <group expand="1" string="Group By">
                         <filter string="Property Name" name="name" context="{'group_by':'name'}"/>
                     </group>
