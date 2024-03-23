@@ -13,6 +13,8 @@
                             <field name="name" string="Name"/>
                             <field name="description" string="Description"/>
                             <field name="property_ids" string="Property" widget="many2many_tags"/>
+                            <field name="offer_ids"/>
+                            <field name="offer_count"/>
                         </group>
                         <group>
                             <field name="property_ids">

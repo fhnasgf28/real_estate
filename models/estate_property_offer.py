@@ -11,7 +11,8 @@ class EstatePropertyOffer(models.Model):
     date_deadline = fields.Date(string='Deadline', compute='_compute_date_deadline', inverse='_inverse_date_deadline')
     partner_id = fields.Many2one('res.partner', string='Partner', required=True)
     property_id = fields.Many2one('estate.property', string='Property', required=True)
-    property_type_id = fields.Many2one('estate.property.type', string='Property Type', related='property_id.property_type_id')
+    # for stat button
+    property_type_id = fields.Many2one('estate.property.type', string='Property Type', related='property_id.property_type_id', store=True)
     validity = fields.Integer('Validity (days)', default=7)
     create_date = fields.Datetime(string='Create Date')
     is_offer_accepted = fields.Boolean(compute="_is_offer_accepted")

@@ -8,9 +8,9 @@
             <field name="arch" type="xml">
                 <form>
                     <header>
-                        <button name="action_cancel" string="Cancel" button_states="canceled" type="object" invisible="state == 'sold'"/>
+                        <button name="action_cancel" string="Cancel" type="object" invisible="state == 'sold'"/>
 <!--                        button_states="draft,sold"-->
-                        <button name="action_sold" string="Sold" button_states="draft" class="btn-primary" type="object" invisible="state == 'sold'"/>
+                        <button name="action_sold" string="Sold" class="btn-primary" type="object" invisible="state == 'sold'"/>
                         <button name="action_draft" string="Set to Draft" class="btn-primary" type="object"/>
 <!--                         button_draft="draft" -->
                         <field name="state" widget="statusbar" statusbar_visible="new, offer_received, offer_accepted, sold" statusbar_colors='{"offer_received": "blue","offer_accepted":"bold green", "sold": "muted"}'/>
@@ -22,6 +22,7 @@
                                 <field name="button_state"/>
                                 <field name="tag_ids" string="Property Tag" widget="many2many_tags" options="{'color_field': 'color'}"/>
                                 <field name="property_type_id" string="Property Type" options="{'no_create': true, 'no_open': true}"/>
+<!--                                options="{'no_create': true, 'no_open': true}"-->
                             </group>
                             <group>
                                 <field name="postcode"/>
@@ -46,7 +47,7 @@
                                 </group>
                                 </page>
                                 <page string="Offers">
-                                    <field name="offer_ids"/>
+                                    <field name="offer_ids" readonly="state== 'offer_accepted' or state== 'sold' or state== 'canceled'"/>
 <!--                                    options="{'no_create_edit': [('state', 'in', ['offer_accepted', 'sold', 'canceled'])"-->
                                 </page>
                                 <page string="Other Information">

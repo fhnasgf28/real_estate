@@ -5,7 +5,7 @@ from datetime import date, timedelta
 class Estate(models.Model):
     _name = 'estate.property.type'
     _description = 'Real estate property type'
-    _order = 'name'
+    _order = 'sequence, name'
 
 
     name = fields.Char(string='Title', required=True)
