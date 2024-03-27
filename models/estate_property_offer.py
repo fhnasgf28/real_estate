@@ -32,6 +32,18 @@ class EstatePropertyOffer(models.Model):
             else:
                 offer.validity = 7
 
+    @api.model
+    def create(self, vals):
+        property_obj = self.env['estate.property'].browse(vals.get("property_id"))
+        existing_offers = property_obj.offer_ids.filtered(lambda offer: offer.price >= vals.get('price'))
+        if existing_offers:
+            raise ValidationError("You Cannot create an offer with a lower amount than an existing offer")
+
+    #     menetapkan status property menjadi 'offer Received'
+        property_obj.state = 'offer_received'
+
+        return super(EstatePropertyOffer, self).create(vals)
+
     # chapter 11
     # _sql_constraints = [
     #     ('check_price_positive', 'CHECK(price > 0)', 'Offer Price must be strictly positive.')

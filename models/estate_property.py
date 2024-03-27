@@ -1,4 +1,4 @@
-from odoo import models, fields, api,_
+from odoo import models, fields, api, _
 from datetime import date, timedelta
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.float_utils import float_compare, float_is_zero
@@ -27,7 +27,8 @@ class Estate(models.Model):
         ('S', 'South'),
         ('E', 'East'),
         ('W', 'West'),
-    ], help='Orientation of the garden on the property')  # , inverse='_inverse_onchange_garden' , compute='_onchange_garden'
+    ],
+                                          help='Orientation of the garden on the property')  # , inverse='_inverse_onchange_garden' , compute='_onchange_garden'
     active = fields.Boolean(string='Active', default=True)
     state = fields.Selection([
         ('new', 'New'),
@@ -94,7 +95,7 @@ class Estate(models.Model):
             if record.button_state == 'canceled':
                 raise UserError('A canceled property cannot be set as sold')
             record.button_state = 'sold'
-            # record.write({'state': 'sold'})
+            record.write({'state': 'sold'})
 
     def action_draft(self):
         for rec in self:
@@ -117,3 +118,20 @@ class Estate(models.Model):
                                                                                             precision_digits=2) == 1:
                 raise ValidationError(_("Selling price should be 90% of expeceted price"))
             # masih kurang paham
+
+    # ++++++++++++++ chapter 13++++++++++++++++++
+    @api.model
+    def create(self, values):
+        return super(Estate, self).create(values)
+
+    # write
+    def write(self, values):
+        return super(Estate, self).write(values)
+
+    # ondelete
+
+    def unlink(self):
+        properties_to_delete = self.filtered(lambda prop: prop.state not in ['new', 'canceled'])
+        if properties_to_delete:
+            raise ValidationError('You cannot delete properties with states other than "New" or "Canceled"')
+        return super(Estate, self).unlink()
