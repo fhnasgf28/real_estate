@@ -88,6 +88,27 @@
                 </tree>
             </field>
         </record>
+<!--        kanban-->
+        <record id="view_estate_property_kanban" model="ir.ui.view">
+            <field name="name">estate.property.kanban</field>
+            <field name="model">estate.property</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="property_type_id" kanban_draggable="False">
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_global_click">
+                                <field name="name"/>
+                                <field name="expected_price" string="Expected Price"/>
+                                <field name="best_price" string="Best Offer" t-if="record.state == 'offer_received'"/>
+                                <field name="selling_price" t-if="record.state == 'sold'"/>
+                                <field name="tag_ids"/>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+<!--        akhir dari kanban-->
 <!--        search-->
         <record id="view_estate_property_search" model="ir.ui.view">
             <field name="name">estate.property.search</field>
@@ -112,7 +133,7 @@
             <field name="name">Real Estate2</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">estate.property</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">tree,form,kanban</field>
             <field name="context">
                 {}
             </field>
