@@ -51,6 +51,9 @@ class Estate(models.Model):
         ('canceled', 'Canceled'),
         ('sold', 'Sold')
     ], default='draft', string='Status', readonly=True)
+    phone = fields.Char(string="Phone")
+    email = fields.Char(string="Email")
+    website = fields.Char(string="Website")
 
     # chapter 9
     @api.depends('living_area', 'garden_area')

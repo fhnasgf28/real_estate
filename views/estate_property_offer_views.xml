@@ -36,6 +36,16 @@
             </field>
         </record>
 
+<!--        <record id="view_estate_property_search" model="ir.ui.view">-->
+<!--            <field name="name">estate.property.offer.search</field>-->
+<!--            <field name="model">estate.property.offer</field>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <search string="Estate Property Offer">-->
+<!--                    <filter name="filter_archive" string="Archived" domain="[('active', '=', False)]"/>-->
+<!--                </search>-->
+<!--            </field>-->
+<!--        </record>-->
+
         <!--        action-->
 <!--        <record id="action_estate_property_offer" model="ir.actions.act_window">-->
 <!--            <field name="name">Property Offer</field>-->

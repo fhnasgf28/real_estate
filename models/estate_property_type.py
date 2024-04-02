@@ -14,6 +14,7 @@ class Estate(models.Model):
     sequence = fields.Integer('Sequence', default=1, help='Used to order stages. Lower is better')
     offer_ids = fields.One2many('estate.property.offer', 'property_type_id', string='Offers')
     offer_count = fields.Integer(string='Offer Count', compute='_compute_offer_count')
+    active = fields.Boolean(string="Active", default=True)
 
     _sql_constraints = [
         ('unique_property_type_name', 'UNIQUE(name)', 'Property type names must be unique.')
