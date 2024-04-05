@@ -7,10 +7,11 @@ from odoo.tools.float_utils import float_compare, float_is_zero
 class Estate(models.Model):
     _name = 'estate.property'
     _description = 'Real estate property'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'name asc'
 
-    name = fields.Char(string='Title', required=True)
-    description = fields.Text(string='Description')
+    name = fields.Char(string='Title', required=True, tracking=True)
+    description = fields.Text(string='Description', tracking=True)
     postcode = fields.Char(string='Postcode', required=True, default='12345', copy=False)
     date_availability = fields.Date(string='Date Availability', readonly=True,
                                     default=lambda self: fields.Date.today() + timedelta(days=90))
@@ -54,6 +55,7 @@ class Estate(models.Model):
     phone = fields.Char(string="Phone")
     email = fields.Char(string="Email")
     website = fields.Char(string="Website")
+    html_desc = fields.Html(string="Masukan data HTML")
 
     # chapter 9
     @api.depends('living_area', 'garden_area')
