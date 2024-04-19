@@ -57,6 +57,15 @@ class Estate(models.Model):
     website = fields.Char(string="Website")
     html_desc = fields.Html(string="Masukan data HTML")
 
+    #report
+    #report
+    def get_excel_report(self):
+        return {
+            'type': 'ir.actions.act_url',
+            'url': '/estate/estate_report_excel/%s' % self.id,
+            'target': 'new',
+        }
+
     # chapter 9
     @api.depends('living_area', 'garden_area')
     def _compute_total_area(self):

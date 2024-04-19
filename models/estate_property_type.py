@@ -7,6 +7,11 @@ class Estate(models.Model):
     _description = 'Real estate property type'
     _order = 'sequence, name'
 
+    STATUSBAR = [
+        ('draft', 'Draft'),
+        ('sold', 'Sold'),
+        ('cancel', 'Cancel'),
+    ]
 
     name = fields.Char(string='Title', required=True)
     description = fields.Text(string='Description')
@@ -15,6 +20,9 @@ class Estate(models.Model):
     offer_ids = fields.One2many('estate.property.offer', 'property_type_id', string='Offers')
     offer_count = fields.Integer(string='Offer Count', compute='_compute_offer_count')
     active = fields.Boolean(string="Active", default=True)
+    # odoo mates statusbar
+    statusbar = fields.Selection(STATUSBAR, string="Statusbar", default='draft')
+
 
     _sql_constraints = [
         ('unique_property_type_name', 'UNIQUE(name)', 'Property type names must be unique.')

@@ -12,6 +12,7 @@
 <!--                        button_states="draft,sold"-->
                         <button name="action_sold" string="Sold" state="sold" class="btn-primary" type="object" invisible="state == 'sold'" confirm="Apakah anda yakin ingin menjual Estate Ini ?"/>
                         <button name="action_draft" string="Set to Draft" class="btn-primary" type="object"/>
+                        <button name="get_excel_report" string="Excel Report" class="btn-primary" type="object"/>
 <!--                         button_draft="draft" -->
                         <field name="state" widget="statusbar" statusbar_visible="new, offer_received, offer_accepted, sold" statusbar_colors='{"offer_received": "blue","offer_accepted":"bold green", "sold": "muted"}'/>
                     </header>
