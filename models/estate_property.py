@@ -2,6 +2,8 @@ from odoo import models, fields, api, _
 from datetime import date, timedelta
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.float_utils import float_compare, float_is_zero
+import webbrowser
+from urllib.parse import quote
 
 
 class Estate(models.Model):
@@ -52,7 +54,7 @@ class Estate(models.Model):
         ('canceled', 'Canceled'),
         ('sold', 'Sold')
     ], default='draft', string='Status', readonly=True)
-    phone = fields.Char(string="Phone")
+    phone = fields.Char(string="Phone", default=62)
     email = fields.Char(string="Email")
     website = fields.Char(string="Website")
     html_desc = fields.Html(string="Masukan data HTML")
@@ -65,6 +67,35 @@ class Estate(models.Model):
             'url': '/estate/estate_report_excel/%s' % self.id,
             'target': 'new',
         }
+
+    def send_to_whatsapp(self):
+        if not self.phone:
+            raise ValidationError(_("Missing Phone number in patient record"))
+        message = 'Hi %s, your postcode number is: %s, Thank You' % (self.name, self.postcode)
+        whatsapp_url = 'https://api.whatsapp.com/send?phone=%s&text=%s' % (self.phone, message)
+        return {
+            'type': 'ir.actions.act_url',
+            'target': 'new',
+            'url': whatsapp_url
+        }
+
+        # print('tombol di klik')
+        # mobile_number = self.phone
+        # message1 = 'Nomor Telepon tidak tersedia untuk record ini, tambahkan nomor telepon terlebih dahulu'
+        # if not mobile_number:
+        #     return {
+        #             'type': 'ir.actions.act_warn',
+        #             'title': 'Nomor Telepon Tidak Tersedia',
+        #             'message': message1,
+        #     }
+        #
+        # message = 'Halo, saya ingin melakukan pemesanan untuk produk ini'
+        #
+        # encode_message = quote(message)
+        # whatsapp_url = f'https://wa.me/{mobile_number}?text={encode_message}'
+        #
+        # webbrowser.open(whatsapp_url)
+        # return True
 
     # chapter 9
     @api.depends('living_area', 'garden_area')
