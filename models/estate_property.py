@@ -13,6 +13,7 @@ class Estate(models.Model):
     _order = 'name asc'
 
     name = fields.Char(string='Title', required=True, tracking=True)
+    no_estate = fields.Char(string='No Reference',readonly=True,default= lambda self: _('New'))
     description = fields.Text(string='Description', tracking=True)
     postcode = fields.Char(string='Postcode', required=True, default='12345', copy=False)
     date_availability = fields.Date(string='Date Availability', readonly=True,
@@ -79,6 +80,9 @@ class Estate(models.Model):
             'url': whatsapp_url
         }
 
+    def action_send_mail(self):
+        template = self.env.ref('estate_property.email_template_name')
+        template.send_mail(self.id, force_send=True)
         # print('tombol di klik')
         # mobile_number = self.phone
         # message1 = 'Nomor Telepon tidak tersedia untuk record ini, tambahkan nomor telepon terlebih dahulu'
@@ -96,6 +100,15 @@ class Estate(models.Model):
         #
         # webbrowser.open(whatsapp_url)
         # return True
+
+    #     sequence
+    @api.model
+    def create(self, vals):
+        if vals.get('no_estate', 'New') == 'New':
+            vals['no_estate'] = self.env['ir.sequence'].next_by_code(
+                'estate_property') or _('New')
+        result = super(Estate, self).create(vals)
+        return result
 
     # chapter 9
     @api.depends('living_area', 'garden_area')
@@ -147,6 +160,9 @@ class Estate(models.Model):
             if rec.button_state == "sold":
                 raise UserError("A sold property cannot be set to Draft")
             rec.button_state = 'draft'
+
+    def action_done(self):
+        self.write({'state': 'sold'})
 
     # Chapter 11
     _sql_constraints = [

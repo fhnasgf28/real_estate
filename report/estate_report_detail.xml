@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="student_card_report">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="student">
+                <t t-call="nyalakanharapan.empty_external_layout">
+                    <div class="page">
+                        <style>
+                            body {padding:0px !important; margin:0px !important;}
+
+                            .avatar {
+                                position: absolute;
+                                top: 137px;
+                                left: 175px;
+                                width: 460px;
+                                height:460px;
+                                border-radius: 50%; /* This makes the element round */
+                                background-size: cover; /* Ensures the image will cover the entire element */
+                                background-position: top center; /* Centers the image */
+                            }
+                        </style>
+                        <div style="height:1270px; width:100%; position:relative;">
+                            <img style="height:100%; width:100%;" src="/nyalakanharapan/static/src/img/student_card.png"/>
+                            <t t-if="student.image_1920">
+                                <div class="avatar"
+                                     t-att-style="'background-image: url(' + image_data_uri(student.image_1920) + ');'"/>
+                            </t>
+                            <span t-if="student.nickname"
+                                  t-field="student.nickname"
+                                  style="font-size:70px; position:absolute; top:650px; width:100%; text-align:center; font-weight:bold; color:black; white-space:nowrap;"/>
+                            <span t-if="student.name"
+                                  t-field="student.name"
+                                  style="font-size:50px; position:absolute; top:770px; width:100%; text-align:center; color:black; white-space:nowrap;"/>
+                            <span t-if="student.class_id"
+                                  t-field="student.class_id.name"
+                                  style="font-size:50px; position:absolute; top:830px; width:100%; text-align:center; color:black; white-space:nowrap;"/>
+                            <span t-if="student.id"
+                                  style="font-size:50px; position:absolute; top:900px; width:100%; text-align:center; color:black; white-space:nowrap;">
+                                ID: <t t-esc="student.barcode"/>
+                            </span>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <record id="report_student_card" model="ir.actions.report">
+        <field name="name">Student Card</field>
+        <field name="model">base.student</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">nyalakanharapan.student_card_report</field>
+        <field name="report_file">nyalakanharapan.student_card_report</field>
+        <field name="print_report_name">'Student Card - %s' % (object.name).replace('/','')</field>
+        <field name="paperformat_id" ref="nyalakanharapan.paperformat_student_card_portrait"/>
+        <field name="binding_model_id" ref="model_base_student"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="student_data_report">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="student">
+                <t t-call="nyalakanharapan.empty_external_layout">
+                    <div class="page">
+                        <style>
+                            body {padding:0px !important; margin:0px !important;}
+
+                            .avatar {
+                                position: relative;
+                                left: 590px;
+                                width: 150px;
+                                height:150px;
+                                bottom:100px;
+                                background-size: cover; /* Ensures the image will cover the entire element */
+                                background-position: top center; /* Centers the image */
+                            }
+                            table {
+                                position:relative;
+                                left:50px;
+                                width:75%;
+                                bottom:50px;
+                            }
+                            .borderless td, .borderless th, .borderless tr {
+                                border: 1px solid white;
+                            }
+                        </style>
+                        <div style="height:100%; width:100%;">
+                            <div style="display:flex;left:50px;position:relative">
+                                <h3><span t-if="student.name" t-field="student.name"
+                                  style="font-size:35px; text-align:center; color:black; white-space:nowrap;position:relative;top:30px"/></h3>
+                                 <br/>
+                                <span t-if="student.nickname" t-field="student.nickname"
+                                  style="font-size:35px;text-align:center;color:black; white-space:nowrap;"/>
+                                <t t-if="student.image_1920">
+                                    <div class="avatar"
+                                     t-att-style="'background-image: url(' + image_data_uri(student.image_1920) + ');'"/>
+                                </t>
+                            </div>
+                            <table class="table borderless">
+                                <tr>
+                                    <td>NIK (Nomor Induk Kependudukan)</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.id_card_number" t-field="student.id_card_number"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Lokasi</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.class_id" t-field="student.class_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Jenis Kelamin</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.gender" t-field="student.gender"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Tempat Lahir</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.birth_village_id" t-field="student.birth_village_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Kabupaten Kelahiran</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.birth_city_id" t-field="student.birth_city_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Tanggal Lahir</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.birth_date" t-field="student.birth_date"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Umur</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.age" t-field="student.age"/> Tahun</td>
+                                </tr>
+                                <tr>
+                                    <td>Umur(Bulan)</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.age_month" t-field="student.age_month"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Alamat</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.street" t-field="student.street"/> , <span t-if="student.village_id" t-field="student.village_id"/> ,
+                                    <span t-if="student.sub_district_id" t-field="student.sub_district_id"/> , <br/>
+                                    <span t-if="student.city_id" t-field="student.city_id"/> ,
+                                    <span t-if="student.state_id" t-field="student.state_id"/> , <span t-if="student.zip" t-field="student.zip"/> , <span t-if="student.country_id" t-field="student.country_id"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Status Aktif</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.active_status" t-field="student.active_status"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Pindah Domisili</td>
+                                    <td>:</td>
+                                    <t t-if="student.moved_domicile">
+                                        <td>Pindah</td>
+                                    </t>
+                                    <t t-else="">
+                                        <td>-</td>
+                                    </t>
+                                </tr>
+                                <tr>
+                                    <td>Agama</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.religion" t-field="student.religion"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Anak ke</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.number_of_children" t-field="student.number_of_children"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Jumlah Saudara</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.number_of_siblings" t-field="student.number_of_siblings"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Nama Sekolah</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.school_id" t-field="student.school_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Kelas</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.grade_id" t-field="student.grade_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Pernah Tinggal Kelas</td>
+                                    <td>:</td>
+                                    <t t-if="student.not_grade_up">
+                                        <td>Pernah</td>
+                                    </t>
+                                    <t t-else="">
+                                        <td>Tidak Pernah</td>
+                                    </t>
+                                </tr>
+                                <tr>
+                                    <td>ID Kartu</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.barcode" t-field="student.barcode"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Presentase Kehadiran</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.attendance_percentage" t-field="student.attendance_percentage"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Tinggi (cm)</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.height" t-field="student.height"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Berat (kg)</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.weight" t-field="student.weight"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Nilai IMT</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.imt_score" t-field="student.imt_score"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Status Gizi</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.nutritional_status" t-field="student.nutritional_status"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Literasi</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.literacy" t-field="student.literacy"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Numerasi</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.numeracy" t-field="student.numeracy"/></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3"><h3>Data Orang Tua</h3></td>
+                                </tr>
+                                <tr>
+                                    <td>Ayah</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.father_id" t-field="student.father_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Tanggal Lahir Ayah</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.father_birth_date" t-field="student.father_birth_date"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Umur Ayah</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.father_age" t-field="student.father_age"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Pendidikan</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.father_education" t-field="student.father_education"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Pekerjaan Ayah</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.father_job" t-field="student.father_job.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Ayah Meninggal</td>
+                                    <td>:</td>
+                                    <t t-if="student.father_died">
+                                        <td>Ya</td>
+                                    </t>
+                                    <t t-else="">
+                                        <td>-</td>
+                                    </t>
+                                </tr>
+                                <tr>
+                                    <td>Ibu</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.mother_id" t-field="student.mother_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Tanggal Lahir Ibu</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.mother_birth_date" t-field="student.mother_birth_date"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Umur Ibu</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.mother_age" t-field="student.mother_age"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Pendidikan</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.mother_education" t-field="student.mother_education"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Pekerjaan</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.mother_job" t-field="student.mother_job.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Ibu Meninggal</td>
+                                    <td>:</td>
+                                    <t t-if="student.mother_died">
+                                        <td>Ya</td>
+                                    </t>
+                                    <t t-else="">
+                                        <td>-</td>
+                                    </t>
+                                </tr>
+                                <tr>
+                                    <td>Nomor HP Orang Tua 1</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.parent_phone_number_1" t-field="student.parent_phone_number_1"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Nomor HP Orang Tua 2</td>
+                                    <td>:</td>
+                                    <td><span t-if="student.parent_phone_number_2" t-field="student.parent_phone_number_2"/></td>
+                                </tr>
+                            </table>
+                            <br/>
+                            <p style="position:relative;left:57px">Terakhir Diperbaharui pada <span t-if="student.write_date" t-field="student.write_date"/></p>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <record id="report_student_data_pdf" model="ir.actions.report">
+        <field name="name">Student Data</field>
+        <field name="model">base.student</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">nyalakanharapan.student_data_report</field>
+        <field name="report_file">nyalakanharapan.student_data_report</field>
+        <field name="print_report_name">'Student Data - %s' % (object.name).replace('/','')</field>
+        <field name="paperformat_id" ref="nyalakanharapan.paperformat_student_data_pdf"/>
+        <field name="binding_model_id" ref="model_base_student"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

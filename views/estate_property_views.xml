@@ -14,12 +14,14 @@
                         <button name="action_draft" string="Set to Draft" class="btn-primary" type="object"/>
                         <button name="get_excel_report" string="Excel Report" class="btn-primary" type="object"/>
                         <button name="send_to_whatsapp" string="Send To WhatsApp" class="btn-primary fa-whatsapp" type="object"/>
+                        <button name="action_send_mail" type="object" string="Send Email" class="oe_highlight"/>
 <!--                         button_draft="draft" -->
                         <field name="state" widget="statusbar" statusbar_visible="new, offer_received, offer_accepted, sold" statusbar_colors='{"offer_received": "blue","offer_accepted":"bold green", "sold": "muted"}'/>
                     </header>
                     <sheet>
                         <group>
                             <group>
+                                <field name="no_estate" string="No Ref"/>
                                 <field name="name" string="Name"/>
                                 <field name="button_state"/>
                                 <field name="tag_ids" string="Property Tag" widget="many2many_tags" options="{'color_field': 'color'}"/>
@@ -89,6 +91,7 @@
                       decoration-muted="state == 'sold'"
                       decoration-success="state == 'offer_accepted'"
                       decoration-info="state == 'offer_received'">
+                    <field name="no_estate" string="No Ref"/>
                     <field name="name"/>
                     <field name="postcode" string="post code"/>
                     <field name="bedroom"/>
@@ -148,6 +151,20 @@
                         <field name="state" icon="fa-users" select="multi" enable_counters="1"/>
                     </searchpanel>
                 </search>
+            </field>
+        </record>
+
+<!--        Ir.actions.server-->
+        <record id="action_mark_as_done" model="ir.actions.server">
+            <field name="name">Mark As Done</field>
+            <field name="state">code</field>
+            <field name="model_id" ref="model_estate_property"/>
+            <field name="binding_model_id" ref="model_estate_property"/>
+            <field name="binding_view_types">list</field>
+            <field name="code">
+                for record in records:
+                    if record.garden_orientation == 'N':
+                        record.action_done()
             </field>
         </record>
 <!--        action-->
