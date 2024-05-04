@@ -13,11 +13,12 @@ class Estate(models.Model):
     _order = 'name asc'
 
     name = fields.Char(string='Title', required=True, tracking=True)
-    no_estate = fields.Char(string='No Reference',readonly=True,default= lambda self: _('New'))
+    no_estate = fields.Char(string='No Reference', readonly=True, default=lambda self: _('New'))
     description = fields.Text(string='Description', tracking=True)
     postcode = fields.Char(string='Postcode', required=True, default='12345', copy=False)
     date_availability = fields.Date(string='Date Availability', readonly=True,
                                     default=lambda self: fields.Date.today() + timedelta(days=90))
+    schedule_date = fields.Datetime(string="Estate Time")
     expected_price = fields.Float(string='Expected price', required=True)
     selling_price = fields.Float(string='Selling price')
     bedroom = fields.Integer(string='Bedrooms', default=2)

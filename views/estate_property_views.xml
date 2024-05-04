@@ -53,6 +53,8 @@
                                         <field name="phone" widget="phone"/>
                                         <field name="email" widget="email"/>
                                         <field name="website" widget="url"/>
+                                        <field name="schedule_date"/>
+
                                     </group>
                                 </page>
                                 <page string="Offers">
@@ -148,7 +150,7 @@
                     </group>
 <!--                    searchpanel-->
                     <searchpanel>
-                        <field name="state" icon="fa-users" select="multi" enable_counters="1"/>
+                        <field name="state" select="multi" enable_counters="1"/>
                     </searchpanel>
                 </search>
             </field>
