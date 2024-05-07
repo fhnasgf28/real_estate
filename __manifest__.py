@@ -18,7 +18,7 @@ Long description of module's purpose
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'mail'],
+    'depends': ['base', 'mail', 'sale'],
 
     # always loaded
     'data': [
@@ -31,6 +31,7 @@ Long description of module's purpose
         'views/estate_property_tag_views.xml',
         'views/res_users_views.xml',
         'views/estate_menus.xml',
+        'views/sale_order_views.xml',
         # 'views/email/send_by_email_view.xml',
         'report/estate_property_reports.xml',
         'report/estate_property_templates.xml',

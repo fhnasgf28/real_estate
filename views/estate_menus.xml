@@ -37,10 +37,10 @@
                   action="action_estate_property_tag"
                   sequence="10"/>
 
-        <menuitem id="menu_action_cancel_property_tag"
-                  name="Cancellation"
-                  parent="menu_estate_property_master"
-                  action="action_cancel_property_tag"
-                  sequence="20"/>
+<!--        <menuitem id="menu_action_cancel_property_tag"-->
+<!--                  name="Cancellation"-->
+<!--                  parent="menu_estate_property_master"-->
+<!--                  action="action_cancel_property_tag"-->
+<!--                  sequence="20"/>-->
     </data>
 </odoo>

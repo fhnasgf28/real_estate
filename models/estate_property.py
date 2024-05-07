@@ -155,6 +155,13 @@ class Estate(models.Model):
                 raise UserError('A canceled property cannot be set as sold')
             record.button_state = 'sold'
             record.write({'state': 'sold'})
+            return {
+                'effect': {
+                    'fadeout': 'slow',
+                    'message': 'Done Succesfully',
+                    'type': 'rainbow_man',
+                }
+            }
 
     def action_draft(self):
         for rec in self:

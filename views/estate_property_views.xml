@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
                 <form>
                     <header>
-                        <button name="action_cancel" string="Cancel" type="object" invisible="button_state == 'sold'"/>
+                        <button name="action_cancel" string="Cancel" type="object" invisible="button_state == 'sold'" help="To Cancel Offering"/>
 <!--                        button_states="draft,sold"-->
                         <button name="action_sold" string="Sold" state="sold" class="btn-primary" type="object" invisible="state == 'sold'" confirm="Apakah anda yakin ingin menjual Estate Ini ?"/>
                         <button name="action_draft" string="Set to Draft" class="btn-primary" type="object"/>
@@ -19,9 +19,13 @@
                         <field name="state" widget="statusbar" statusbar_visible="new, offer_received, offer_accepted, sold" statusbar_colors='{"offer_received": "blue","offer_accepted":"bold green", "sold": "muted"}'/>
                     </header>
                     <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="no_estate" string="No Ref" readonly="1"/>
+                            </h1>
+                        </div>
                         <group>
                             <group>
-                                <field name="no_estate" string="No Ref"/>
                                 <field name="name" string="Name"/>
                                 <field name="button_state"/>
                                 <field name="tag_ids" string="Property Tag" widget="many2many_tags" options="{'color_field': 'color'}"/>
