@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+<!--        form-->
+        <record id="view_estate_property_form" model="ir.ui.view">
+            <field name="name">estate.property.form</field>
+            <field name="model">estate.property</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="action_cancel" string="Cancel" type="object" invisible="button_state == 'sold'"/>
+<!--                        button_states="draft,sold"-->
+                        <button name="action_sold" string="Sold" state="sold" class="btn-primary" type="object" invisible="state == 'sold'" confirm="Apakah anda yakin ingin menjual Estate Ini ?"/>
+                        <button name="action_draft" string="Set to Draft" class="btn-primary" type="object"/>
+                        <button name="get_excel_report" string="Excel Report" class="btn-primary" type="object"/>
+                        <button name="send_to_whatsapp" string="Send To WhatsApp" class="btn-primary fa-whatsapp" type="object"/>
+                        <button name="action_send_mail" type="object" string="Send Email" class="oe_highlight"/>
+<!--                         button_draft="draft" -->
+                        <field name="state" widget="statusbar" statusbar_visible="new, offer_received, offer_accepted, sold" statusbar_colors='{"offer_received": "blue","offer_accepted":"bold green", "sold": "muted"}'/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                        <button name="action_open_estate" type="object" class="oe_stat_button" icon="fa-calendar">
+                            <div class="o_stat_info">
+                                <field name="estate_count" class="o_stat_value"/>
+                                <span class="o_stat_text">Real Estate</span>
+                            </div>
+                        </button>
+                        </div>
+
+                        <div class="oe_title">
+                            <h1>
+                                <field name="no_estate" string="No Ref" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="no_estate" string="No Ref"/>
+                                <field name="name" string="Name"/>
+                                <field name="button_state"/>
+                                <field name="tag_ids" string="Property Tag" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                                <field name="property_type_id" string="Property Type" options="{'no_create': true, 'no_open': true}"/>
+<!--                                options="{'no_create': true, 'no_open': true}"-->
+                            </group>
+                            <group>
+                                <field name="postcode"/>
+                                <field name="expected_price"/>
+                                <field name="best_price"/>
+                                <field name="date_availability"/>
+                                <field name="selling_price"/>
+                            </group>
+                            <notebook>
+                                <page string="Description">
+                                <group>
+                                    <field name="description" widget="html"/>
+                                    <field name="bedroom"/>
+                                    <field name="living_area"/>
+                                    <field name="facades"/>
+                                    <field name="garage"/>
+                                    <field name="garden"/>
+                                    <field name="garden_area" invisible="garden == False"/>
+                                    <field name="garden_orientation" invisible="garden == False"/>
+<!--                                    <field name="state"/>-->
+                                    <field name="total_area"/>
+                                </group>
+                                    <group>
+                                        <field name="phone" widget="phone"/>
+                                        <field name="email" widget="email"/>
+                                        <field name="website" widget="url"/>
+                                        <field name="schedule_date"/>
+
+                                    </group>
+                                </page>
+                                <page string="Offers">
+                                    <field name="offer_ids" readonly="state== 'offer_accepted' or state== 'sold' or state== 'canceled'"/>
+<!--                                    options="{'no_create_edit': [('state', 'in', ['offer_accepted', 'sold', 'canceled'])"-->
+                                </page>
+                                <page string="Other Information">
+                                    <group>
+                                        <field name="buyer_id"/>
+                                        <field name="salesperson_id"/>
+                                    </group>
+                                </page>
+                            </notebook>
+                            <notebook>
+                                <page string="HTML Description" name="html_desc">
+                                    <field name="html_desc" string="HTML Desc"/>
+                                </page>
+                            </notebook>
+                        </group>
+                    </sheet>
+<!--                    chatter-->
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" group="base.groups_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+                </form>
+            </field>
+        </record>
+<!--        tree-->
+        <record id="view_estate_property_list" model="ir.ui.view">
+            <field name="name">estate.property.tree</field>
+            <field name="model">estate.property</field>
+            <field name="arch" type="xml">
+                <tree decoration-danger="state == 'cancel'"
+                      decoration-muted="state == 'sold'"
+                      decoration-success="state == 'offer_accepted'"
+                      decoration-info="state == 'offer_received'">
+                    <field name="no_estate" string="No Ref"/>
+                    <field name="name"/>
+                    <field name="postcode" string="post code"/>
+                    <field name="bedroom"/>
+                    <field name="living_area"/>
+                    <field name="expected_price"/>
+                    <field name="selling_price"/>
+                    <field name="date_availability" string="Available From"  options='{"no_open": True}' invisible="1"/>
+                    <field name="property_type_id" string="Property Type Id"/>
+                    <field name="tag_ids"/>
+                    <field name="state" decoration-danger="state == 'cancel'"
+                      decoration-muted="state == 'sold'"
+                      decoration-success="state == 'offer_accepted'"
+                      decoration-info="state == 'offer_received'"
+                      widget="badge"/>
+                </tree>
+            </field>
+        </record>
+<!--        kanban-->
+        <record id="view_estate_property_kanban" model="ir.ui.view">
+            <field name="name">estate.property.kanban</field>
+            <field name="model">estate.property</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="property_type_id" kanban_draggable="False">
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_global_click">
+                                <field name="name"/>
+                                <field name="expected_price" string="Expected Price"/>
+                                <field name="best_price" string="Best Offer" t-if="record.state == 'offer_received'"/>
+                                <field name="selling_price" t-if="record.state == 'sold'"/>
+                                <field name="tag_ids"/>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+<!--        akhir dari kanban-->
+<!--        search-->
+        <record id="view_estate_property_search" model="ir.ui.view">
+            <field name="name">estate.property.search</field>
+            <field name="model">estate.property</field>
+            <field name="arch" type="xml">
+                <search string="Estate Property">
+                    <field name="name" string="Title"/>
+                    <field name="postcode"/>
+                    <field name="bedroom"/>
+                    <field name="living_area" filter_domain="[('living_area', '>=', 10)]"/>
+                    <filter name="Available" domain="[('name', 'ilike', 'farhan')]"/>
+                    <filter string="Inactive" name="inactive" domain="[('active', '=', False)]"/>
+                    <filter string="Bedroom" name="Bedroom" domain="[('bedroom', '>', 2)]"/>
+                    <group expand="1" string="Group By">
+                        <filter string="Property Name" name="name" context="{'group_by':'name'}"/>
+                    </group>
+<!--                    searchpanel-->
+                    <searchpanel>
+                        <field name="state" select="multi" enable_counters="1"/>
+                    </searchpanel>
+                </search>
+            </field>
+        </record>
+
+<!--        Ir.actions.server-->
+        <record id="action_mark_as_done" model="ir.actions.server">
+            <field name="name">Mark As Done</field>
+            <field name="state">code</field>
+            <field name="model_id" ref="model_estate_property"/>
+            <field name="binding_model_id" ref="model_estate_property"/>
+            <field name="binding_view_types">list</field>
+            <field name="code">
+                for record in records:
+                    if record.garden_orientation == 'N':
+                        record.action_done()
+            </field>
+        </record>
+
+<!--        action-->
+        <record id="action_open_estate" model="ir.actions.act_window">
+            <field name="name">Real Estate</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">estate.property</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create your first appointment !
+                </p>
+            </field>
+        </record>
+<!--        action-->
+        <record id="action_real_estate" model="ir.actions.act_window">
+            <field name="name">Real Estate2</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">estate.property</field>
+            <field name="view_mode">tree,form,kanban</field>
+            <field name="context">
+                {}
+            </field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create Your First Room Estate
+                </p>
+            </field>
+        </record>
+
+<!--        Filter Menu action-->
+        <record id="action_real_estate_filter" model="ir.actions.act_window">
+            <field name="name">Filter Large Estate</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">estate.property</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'search_default_bedroom': 1}</field>
+            <field name="domain">[('button_state', '=', 'sold')]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create yout first Real Estate Big
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>

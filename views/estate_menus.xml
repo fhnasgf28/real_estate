@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <menuitem id="menu_real_estate_root"
+                  name="Real Estate"
+                  sequence="0"/>
+        <menuitem id="menu_estate_property_master"
+                  name="Advertisement"
+                  parent="menu_real_estate_root"
+                  sequence="0"/>
+        <menuitem id="menu_estate_property"
+                  name="Properties"
+                  parent="menu_estate_property_master"
+                  action="action_real_estate"
+                  sequence="0"/>
+        <menuitem id="menu_estate_property_filter"
+                  name="Large"
+                  parent="menu_estate_property_master"
+                  action="action_real_estate_filter"
+                  sequence="0"/>
+
+<!--        estate.property.type-->
+        <menuitem id="menu_estate_property_type_master"
+                  name="Settings"
+                  parent="menu_real_estate_root"
+                  sequence="0"/>
+        <menuitem id="menu_estate_property_type"
+                  name="Property Type"
+                  parent="menu_estate_property_type_master"
+                  action="action_estate_property_type"
+                  sequence="0"/>
+
+<!--        estate.property.tag-->
+        <menuitem id="menu_estate_property_tag"
+                  name="Property Tag"
+                  parent="menu_estate_property_type_master"
+                  action="action_estate_property_tag"
+                  sequence="10"/>
+
+<!--        <menuitem id="menu_action_cancel_property_tag"-->
+<!--                  name="Cancellation"-->
+<!--                  parent="menu_estate_property_master"-->
+<!--                  action="action_cancel_property_tag"-->
+<!--                  sequence="20"/>-->
+    </data>
+</odoo>

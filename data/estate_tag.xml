@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="estate_property_perumahan" model="estate.property.tag">
+	    <field name="name">Perumahan</field>
+
+    </record><record id="estate_property_komersial" model="estate.property.tag">
+	    <field name="name">Komersial</field>
+    </record>
+
+    <record id="estate_property_industri" model="estate.property.tag">
+	    <field name="name">Industri</field>
+    </record>
+
+    <record id="estate_property_tanah" model="estate.property.tag">
+	    <field name="name">Tanah</field>
+	    <field name="active" eval='False'/>
+    </record>
+
+
+</odoo>

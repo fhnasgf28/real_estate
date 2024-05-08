@@ -18,17 +18,34 @@ Long description of module's purpose
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base'],
+    'depends': ['base', 'mail', 'sale'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
-        'views/views.xml',
-        'views/templates.xml',
+        'data/estate_tag.xml',
+        'data/sequence.xml',
+        'views/estate_property_views.xml',
+        'views/estate_property_type_views.xml',
+        'views/estate_property_offer_views.xml',
+        'views/estate_property_tag_views.xml',
+        'views/res_users_views.xml',
+        'views/estate_menus.xml',
+        'views/sale_order_views.xml',
+        # 'views/email/send_by_email_view.xml',
+        'report/estate_property_reports.xml',
+        'report/estate_property_templates.xml',
+        'wizard/estate_property_tag_wizard_view.xml',
+        'wizard/cancel_estate_property_wizard.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
         'demo/demo.xml',
     ],
+    'images': ['static/description/banner.png'],
+    'license': 'AGPL-3',
+    'installable': True,
+    'application': True,
+    'auto_install': False,
 }
 
