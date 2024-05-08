@@ -13,7 +13,8 @@ class Estate(models.Model):
     _order = 'name asc'
 
     name = fields.Char(string='Title', required=True, tracking=True)
-    no_estate = fields.Char(string='No Reference', readonly=True, default=lambda self: _('New'))
+    no_estate = fields.Char(string='Order Reference', default=lambda self: self.env['ir.sequence'].next_by_code(
+           'estate.property'), copy=False, readonly=True, tracking=True)
     description = fields.Text(string='Description', tracking=True)
     postcode = fields.Char(string='Postcode', required=True, default='12345', copy=False)
     date_availability = fields.Date(string='Date Availability', readonly=True,
@@ -56,6 +57,7 @@ class Estate(models.Model):
         ('canceled', 'Canceled'),
         ('sold', 'Sold')
     ], default='draft', string='Status', readonly=True)
+    estate_count = fields.Integer(string='Real Estate Count', compute='_compute_estate_count')
     phone = fields.Char(string="Phone", default=62)
     email = fields.Char(string="Email")
     website = fields.Char(string="Website")
@@ -63,12 +65,60 @@ class Estate(models.Model):
 
     #report
     #report
+
+    # phone python contraint
+    @api.constrains('phone')
+    def check_phone(self):
+        for rec in self:
+            telephone = self.env['estate.property'].search([('phone', '=', rec.phone), ('id', '!=', rec.id)])
+            if telephone:
+                raise ValidationError(_("Phone %s Already Exist" % rec.phone))
+
+    # menampilkan Informasi Record kepada Pengguna
+    def name_get(self):
+        result = []
+        for rec in self:
+            name = '[' + rec.no_estate + ']' + rec.name
+            result.append((rec.id, name))
+        return result
+
+    # Real Estate Count
+    def _compute_estate_count(self):
+        for rec in self:
+            estate_count = self.env['estate.property'].search_count([])
+            rec.estate_count = estate_count
+
+    def action_open_estate(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Estate Property',
+            'res_model': 'estate.property',
+            'domain': [('no_estate', '=', self.id)],
+            'context': {'default_no_estate': self.id},
+            'view_mode': 'tree',
+            'target': 'current',
+
+        }
+
+    # unlink
+    # def unlink(self):
+    #     if self.state == 'sold':
+    #         raise ValidationError(_("You cannot Delete %s as it is in done state" % self.name))
+    #     return super(Estate, self).unlink()
+    # akhir unlink
+
     def get_excel_report(self):
         return {
             'type': 'ir.actions.act_url',
             'url': '/estate/estate_report_excel/%s' % self.id,
             'target': 'new',
         }
+
+    @api.model
+    def default_get(self, fields):
+        res = super(Estate, self).default_get(fields)
+        res['description'] = 'New Estate Created'
+        return res
 
     def send_to_whatsapp(self):
         if not self.phone:
@@ -103,13 +153,15 @@ class Estate(models.Model):
         # return True
 
     #     sequence
-    @api.model
-    def create(self, vals):
-        if vals.get('no_estate', 'New') == 'New':
-            vals['no_estate'] = self.env['ir.sequence'].next_by_code(
-                'estate_property') or _('New')
-        result = super(Estate, self).create(vals)
-        return result
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('no_estate', _('New')) == _('New'):
+                vals['no_estate'] = self.env['ir.sequence'].next_by_code(
+                    'estate.property'
+                )
+        return super(Estate).create(vals_list)
 
     # chapter 9
     @api.depends('living_area', 'garden_area')

@@ -5,6 +5,8 @@
            <field name="name">Purchase Estate Property</field>
            <field name="code">estate.property</field>
            <field name="prefix">PEP</field>
+           <field name="number_next">1</field>
+           <field name="number_increment">1</field>
            <field name="padding">5</field>
            <field name="company_id" eval="False"/>
        </record>
