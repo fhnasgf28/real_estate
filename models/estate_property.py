@@ -154,13 +154,12 @@ class Estate(models.Model):
 
     #     sequence
 
-    @api.model_create_multi
+    @api.model
     def create(self, vals_list):
-        for vals in vals_list:
-            if vals.get('no_estate', _('New')) == _('New'):
-                vals['no_estate'] = self.env['ir.sequence'].next_by_code(
-                    'estate.property'
-                )
+            # sequence Generation
+        if vals_list.get('no_estate', 'New') == 'New':
+            vals_list['no_estate'] = self.env['ir.sequence'].next_by_code(
+                'estate.property')
         return super(Estate).create(vals_list)
 
     # chapter 9
