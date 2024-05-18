@@ -22,14 +22,22 @@ Real Estate
 
 |badge1| |badge2| |badge3|
 
-Description Modul Preview Product Label
+Description Modul Preview Estate
 =======================================
 
-* The Preview Product Label module allows users to view product labels directly within Odoo. 
-* With this module, users can quickly access and review product labels without the need to download them separately. 
-* The labels are displayed in a PDF format, making them easy to read and print if necessary.
-* Users can customize the layout, design, and information displayed on the labels to suit their preferences and business needs. 
-* This module enhances efficiency by providing a convenient way to view and verify product labels, streamlining the product management process.
+Fitur Utama:
+Manajemen Properti:
+
+Pendaftaran Properti: Memungkinkan pengguna untuk menambahkan dan mengelola daftar properti dengan detail lengkap seperti lokasi, tipe properti, luas, harga, dan fasilitas.
+Kategorisasi Properti: Properti dapat dikategorikan berdasarkan jenis, status (tersedia, terjual, disewakan), dan lokasi.
+Manajemen Pelanggan:
+
+Pendaftaran Pelanggan: Memungkinkan pencatatan informasi kontak dan preferensi calon pembeli atau penyewa.
+Riwayat Interaksi: Menyimpan catatan interaksi dengan pelanggan, termasuk panggilan, kunjungan, dan email.
+Manajemen Penawaran dan Kontrak:
+
+Penawaran: Mengelola penawaran pembelian atau penyewaan properti dari pelanggan, termasuk penawaran harga dan negosiasi.
+Kontrak: Membuat dan mengelola kontrak penjualan atau sewa, dengan otomatisasi perhitungan harga, pajak, dan ketentuan pembayaran.
 
 **Table of contents**
 
@@ -52,7 +60,7 @@ Credits
 Authors
 ~~~~~~~
 
-* Nibble Softwork
+* Farhan Assegaf
 
 Maintainers
 ~~~~~~~~~~~
