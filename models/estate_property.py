@@ -14,7 +14,7 @@ class Estate(models.Model):
 
     name = fields.Char(string='Title', required=True, tracking=True)
     no_estate = fields.Char(string='Order Reference', default=lambda self: self.env['ir.sequence'].next_by_code(
-           'estate.property'), copy=False, readonly=True, tracking=True)
+        'estate.property'), copy=False, readonly=True, tracking=True)
     description = fields.Text(string='Description', tracking=True)
     postcode = fields.Char(string='Postcode', required=True, default='12345', copy=False)
     date_availability = fields.Date(string='Date Availability', readonly=True,
@@ -156,7 +156,7 @@ class Estate(models.Model):
 
     @api.model
     def create(self, vals_list):
-            # sequence Generation
+        # sequence Generation
         if vals_list.get('no_estate', 'New') == 'New':
             vals_list['no_estate'] = self.env['ir.sequence'].next_by_code(
                 'estate.property')
@@ -213,6 +213,29 @@ class Estate(models.Model):
                     'type': 'rainbow_man',
                 }
             }
+
+        res = super(Estate).action_sold()
+        buyer_id = self.buyer_id.id
+        move_vals = {
+            'partner_id': buyer_id,
+            'move_type': 'out_invoice',
+        }
+        invoice = self.env['account_move'].create(move_vals)
+        selling_price = self.best_price
+        invoice_line_vals = [
+            {
+                'name': 'Property price 6%',
+                'quantity': 1,
+                'price_unit': selling_price * 0.6,
+            },
+            {
+                'name': 'Administrative Fees',
+                'quantity': 1,
+                'price_unit': 100.00,
+            }
+        ]
+        invoice.write({'invoice_line_ids': [(0, 0, line) for line in invoice_line_vals]})
+        return res
 
     def action_draft(self):
         for rec in self:
